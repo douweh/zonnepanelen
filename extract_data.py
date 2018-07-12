@@ -2,12 +2,18 @@
 
 import sunspec.core.client as client
 import sunspec.core.suns as suns
+from elasticsearch import Elasticsearch
+from datetime import datetime
+
+es = Elasticsearch([{'host': 'nuccie.local', 'port': 9200}])
 
 try:
     sd = client.SunSpecClientDevice(client.TCP, 1, ipaddr="192.168.0.158", ipport=502, timeout=2.0)
 except client.SunSpecClientError, e:
     print('Error: %s' % (e))
     sys.exit(1)
+
+data = {}
 
 if sd is not None:
     sd.read()
@@ -38,4 +44,12 @@ if sd is not None:
                         value = '0x%08x' % (point.value)
                     else:
                         value = str(point.value).rstrip('\0')
+                    data[point.point_type.label] = point.value
                     print('%-40s %20s %-10s' % (label, value, str(units)))
+
+if len(data) is not 0:
+    print("Adding data to elasticsearch")
+    data['timestamp']=datetime.now()
+    es.index(index='zonnepanelen', doc_type='logs', body=data)
+else:
+    print("No Data")
