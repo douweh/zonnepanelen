@@ -49,7 +49,7 @@ if sd is not None:
 
 if len(data) is not 0:
     print("Adding data to elasticsearch")
-    data['timestamp']=datetime.now()
+    data['timestamp']=datetime.utcnow()
     es.index(index='zonnepanelen', doc_type='logs', body=data)
 else:
     print("No Data")
