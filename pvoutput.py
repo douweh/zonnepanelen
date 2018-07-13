@@ -29,6 +29,10 @@ if sd is not None:
                         data["v1"] = point.value
                     if point.point_type.id == "W":
                         data["v2"] = point.value
+                    if point.point_type.id == "TmpSnk":
+                        data["v5"] = point.value
+                    if point.point_type.id == "DCV":
+                        data["v6"] = point.value
 
 
 if len(data) is not 0:
